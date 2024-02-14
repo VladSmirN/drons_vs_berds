@@ -11,7 +11,7 @@ import cv2
 import pandas as pd
 
 PATH_TO_GT_FILES = "./challenge-master/annotations" 
-OUT_PATH = '/home/vlad/datasets/drons_vs_berds/yolo/labels'  
+OUT_PATH = '/home/vlad/datasets/drons_vs_berds/yolo/labels_2'  
 IMAGES_PATH = '/home/vlad/datasets/drons_vs_berds/images' 
 
 if __name__ == '__main__':
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     yc_all = []
     width_image_all = []  
     height_image_all = [] 
-
+    name_size_dict = {}
     for gt in gt_list:
         if gt.endswith('.txt'):
             gt_file = os.path.join(gt_dir, gt)
@@ -38,9 +38,16 @@ if __name__ == '__main__':
             os.makedirs(os.path.join(OUT_PATH, filename), exist_ok=True)   
 
             path_image=os.path.join(IMAGES_PATH,filename, f'0000.jpg' )
+
+            if not os.path.isfile(path_image):
+                continue
             image = cv2.imread(path_image)   
-            # print(path_image) 
+             
+  
             height, width = image.shape[:2]
+            print(path_image.split('/')[-2], height, width )
+            name_size_dict[path_image.split('/')[-2]]= f'{width},{height}'
+            continue
             # width = 1920
             # height = 1080
             # if 'C000' in gt:
@@ -94,7 +101,10 @@ if __name__ == '__main__':
                         ann_cnt += 1
                 
                     line = ann.readline()
-                    
+    import json
+
+    with open("./name_to_size.json", "w") as outfile:
+        json.dump(name_size_dict, outfile, indent=4, sort_keys=False)           
     df = pd.DataFrame({'id_all':id_all,
                        'w_all':w_all,
                        'h_all':h_all,
@@ -104,7 +114,7 @@ if __name__ == '__main__':
                        'height_image_all':height_image_all,
                        
                        })
-    df.to_csv('statistics_drone.csv')
+    # df.to_csv('statistics_drone.csv')
 
        
  
