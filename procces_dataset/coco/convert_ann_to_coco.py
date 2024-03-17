@@ -8,6 +8,7 @@ import glob
 from collections import defaultdict
                 
 PATH_TO_GT_FILES = "./challenge-master/annotations" 
+PATH_TO_IMAGES = '/home/vlad/datasets/drons_vs_berds/images'  
 OUT_PATH = '/home/vlad/datasets/drons_vs_berds/coco/labels'  
 PATH_TO_JSON_WITH_SIZE = '/home/vlad/projects/drons_vs_berds/name_to_size.json'
 FREQ = 2
@@ -50,7 +51,7 @@ if __name__ == '__main__':
             with open(gt_file, 'r') as ann:
                 line = ann.readline()  
                 while line:
-                   
+                    
                     params = line.split(' ')
                     img_id = int(params[0])
                     obj_cnt = int(params[1])
@@ -58,12 +59,19 @@ if __name__ == '__main__':
                     if not img_id % FREQ == 0:
                         line = ann.readline()
                         continue
+                    file_name =  os.path.join(os.path.basename(out_file).split('.')[0], "%04d.jpg" %  img_id)   
+
+                    path_to_image = os.path.join(PATH_TO_IMAGES, file_name)
+                    if not  os.path.isfile(path_to_image):
+                        print('изображение отсутсвует: ', path_to_image)
+                        line = ann.readline()
+                        continue
 
                     img_info = dict()
                     img_info['id'] = img_id
                     img_info['width'] = width
                     img_info['height'] = height
-                    img_info['file_name'] = "%04d.jpg" %  img_id #has to be adapted for instance for img_id = 0 image_name = 0.jpg
+                    img_info['file_name'] = file_name  #has to be adapted for instance for img_id = 0 image_name = 0.jpg
                     out_data['images'].append(img_info)
                     
                     for idx in range(obj_cnt):
