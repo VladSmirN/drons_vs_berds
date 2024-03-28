@@ -73,15 +73,27 @@ if __name__ == '__main__':
                     img_info['height'] = height
                     img_info['file_name'] = file_name  #has to be adapted for instance for img_id = 0 image_name = 0.jpg
                     out_data['images'].append(img_info)
-                    
-                    for idx in range(obj_cnt):
 
+                     
+
+                    for idx in range(obj_cnt):
+                        
+                           
                         x_left = int(params[idx*5 + 2])
                         y_top = int(params[idx*5 + 3])
                         w = int(params[idx*5 + 4])
                         h = int(params[idx*5 + 5])
                         cls = params[idx*5 +6]
-                        
+
+                        #filter fail annotation   
+                        x_left = max(0, x_left)
+                        y_top = max(0, y_top)
+                        if x_left + w > width:
+                            w = width - x_left -1   
+                        if y_top + h > height:
+                            h = height - y_top -1  
+
+
                         ann_info = dict()
                         ann_info['id'] = ann_cnt
                         ann_info['iscrowd'] = 0
